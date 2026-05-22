@@ -374,19 +374,17 @@ async function testKey(type){
   btn.disabled=true;btn.textContent='...';
   const resEl=$(type==='gemini'?'gem-res':'groq-res');
   try{
-    let ok=false;
+    let r;
     if(type==='gemini'){
-      const r=await fetch(`${GEMINI}/models/gemini-2.0-flash:generateContent?key=${key}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:'OK'}]}],generationConfig:{maxOutputTokens:5}})});
-      ok=r.ok;
+      r=await fetch(`${GEMINI}/models/gemini-2.0-flash:generateContent?key=${key}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:'OK'}]}],generationConfig:{maxOutputTokens:5}})});
     }else{
-      const r=await fetch(GROQ,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'user',content:'OK'}],max_tokens:5})});
-      ok=r.ok;
+      r=await fetch(GROQ,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'user',content:'OK'}],max_tokens:5})});
     }
     let errText='';
-    if(!ok){try{const ej=await r.json();errText=ej?.error?.message||('HTTP '+r.status);}catch{errText='HTTP '+r.status;}}
-    resEl.style.display='flex';resEl.className='test-res '+(ok?'res-ok':'res-fail');
-    resEl.textContent=ok?t('testOk'):t('testFail')+(errText?' ('+errText+')':'');
-  }catch(e){resEl.style.display='flex';resEl.className='test-res res-fail';resEl.textContent=t('testFail')+'('+e.message+')';}
+    if(!r.ok){try{const ej=await r.json();errText=ej?.error?.message||('HTTP '+r.status);}catch{errText='HTTP '+r.status;}}
+    resEl.style.display='flex';resEl.className='test-res '+(r.ok?'res-ok':'res-fail');
+    resEl.textContent=r.ok?t('testOk'):t('testFail')+(errText?' ('+errText+')':'');
+  }catch(e){resEl.style.display='flex';resEl.className='test-res res-fail';resEl.textContent=t('testFail')+' ('+e.message+')';}
   btn.disabled=false;btn.textContent=t('testBtn');
 }
 
