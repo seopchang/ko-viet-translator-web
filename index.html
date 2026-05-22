@@ -313,7 +313,7 @@ async function translate(text){
   const res=await callGemini({
     contents:[{parts:[{text}]}],
     systemInstruction:{parts:[{text:SYS}]},
-    generationConfig:{temperature:0.1,maxOutputTokens:4000,responseMimeType:'application/json'}
+    generationConfig:{temperature:0.1,maxOutputTokens:4000}
   });
   const j=await res.json();
   return parseJ(j?.candidates?.[0]?.content?.parts?.[0]?.text??'');
@@ -355,7 +355,7 @@ function onFileChosen(ev){
       const res=await callGemini({
         contents:[{parts:[{inlineData:{mimeType:mime,data:b64}},{text:'이 이미지의 텍스트를 번역해줘.'}]}],
         systemInstruction:{parts:[{text:SYS}]},
-        generationConfig:{temperature:0.1,maxOutputTokens:4000,responseMimeType:'application/json'}
+        generationConfig:{temperature:0.1,maxOutputTokens:4000}
       });
       const j=await res.json();
       const r=parseJ(j?.candidates?.[0]?.content?.parts?.[0]?.text??'');
