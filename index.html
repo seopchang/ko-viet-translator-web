@@ -230,6 +230,7 @@ function showTab(tab){
   $('main-wrap').style.display=isT?'flex':'none';
   $('settings-wrap').classList.toggle('show',!isT);
   $('tab-t').classList.toggle('on',isT); $('tab-s').classList.toggle('on',!isT);
+  if(!isT){$('gem-key').value=gKey;$('groq-key').value=qKey;}
 }
 
 function openPanel(){$('overlay').style.display='block';requestAnimationFrame(()=>$('panel').classList.add('open'));}
@@ -381,9 +382,11 @@ async function testKey(type){
       const r=await fetch(GROQ,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'user',content:'OK'}],max_tokens:5})});
       ok=r.ok;
     }
+    let errText='';
+    if(!ok){try{const ej=await r.json();errText=ej?.error?.message||('HTTP '+r.status);}catch{errText='HTTP '+r.status;}}
     resEl.style.display='flex';resEl.className='test-res '+(ok?'res-ok':'res-fail');
-    resEl.textContent=ok?t('testOk'):t('testFail');
-  }catch{resEl.style.display='flex';resEl.className='test-res res-fail';resEl.textContent=t('testFail');}
+    resEl.textContent=ok?t('testOk'):t('testFail')+(errText?' ('+errText+')':'');
+  }catch(e){resEl.style.display='flex';resEl.className='test-res res-fail';resEl.textContent=t('testFail')+'('+e.message+')';}
   btn.disabled=false;btn.textContent=t('testBtn');
 }
 
